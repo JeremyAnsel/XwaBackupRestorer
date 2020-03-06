@@ -1,0 +1,29 @@
+image: Visual Studio 2019
+version: 1.0.{build}
+configuration: Release
+
+init:
+- if "%APPVEYOR_REPO_NAME%" == "JeremyAnsel/XwaBackupRestorer" if "%APPVEYOR_REPO_BRANCH%"=="master" if not defined APPVEYOR_PULL_REQUEST_NUMBER set DEPLOY=True
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+
+nuget:
+  disable_publish_on_pr: true
+
+before_build:
+- nuget restore XwaBackupRestorer\XwaBackupRestorer.sln
+
+build:
+  project: XwaBackupRestorer\XwaBackupRestorer.sln
+  verbosity: minimal
+
+after_build:
+- XwaBackupRestorer\build-dist.cmd
+
+artifacts:
+- path: XwaBackupRestorer\dist
+  name: XwaBackupRestorer-$(APPVEYOR_BUILD_VERSION)
+  type: zip

@@ -1,0 +1,52 @@
+﻿<Window x:Class="XwaBackupRestorer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XwaBackupRestorer"
+        mc:Ignorable="d"
+        Title="XWA Backup Restorer"
+        Height="600" Width="900"
+        UseLayoutRounding="True">
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
+            <Button x:Name="openButton" Content="Open..." Click="OpenButton_Click" />
+            <Button x:Name="restoreButton" Content="Restore" Tag="{Binding BackupCrafts/}" Click="RestoreButton_Click" />
+        </ToolBar>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding XwaDirectory}" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding BackupCrafts}" IsSynchronizedWithCurrentItem="True" SelectionMode="Single">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding CraftName}" />
+                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding CreationDate}" />
+                        <GridViewColumn Header="Readme" DisplayMemberBinding="{Binding ReadmeFileName}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <GroupBox Grid.Row="1" Grid.Column="0" Header="Files">
+                <ListBox ItemsSource="{Binding BackupCrafts/FileNames}" />
+            </GroupBox>
+            <local:FileRichTextBox x:Name="readmeTextBox"
+                                   Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                   HorizontalScrollBarVisibility="Auto"
+                                   VerticalScrollBarVisibility="Auto"
+                                   IsReadOnly="True">
+                <local:FileRichTextBox.FilePath>
+                    <MultiBinding Converter="{x:Static local:FilePathConverter.Default}">
+                        <Binding Path="XwaDirectory" />
+                        <Binding Path="BackupCrafts/ReadmeFileName" />
+                    </MultiBinding>
+                </local:FileRichTextBox.FilePath>
+            </local:FileRichTextBox>
+        </Grid>
+    </DockPanel>
+</Window>
