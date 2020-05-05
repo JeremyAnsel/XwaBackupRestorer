@@ -186,6 +186,18 @@ namespace XwaBackupRestorer
                         continue;
                     }
 
+                    string name = Path.GetFileName(fileName);
+
+                    if (name.StartsWith("flightscreen", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    if (name.StartsWith("frontscreen", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     string fileNameBackup = fileName.Replace(xwaDirectory, "Backup");
                     if (craft.FileNames.Any(t => t.Equals(fileNameBackup, StringComparison.OrdinalIgnoreCase)))
                     {
