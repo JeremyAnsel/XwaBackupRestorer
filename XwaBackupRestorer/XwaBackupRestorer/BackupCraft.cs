@@ -130,7 +130,7 @@ namespace XwaBackupRestorer
             }
         }
 
-        public static List<BackupCraft> LoadList(string xwaDirectory)
+        public static List<BackupCraft> LoadList(string xwaDirectory, bool includeNewFiles)
         {
             var crafts = new List<BackupCraft>();
 
@@ -170,45 +170,48 @@ namespace XwaBackupRestorer
 
             crafts.Sort((x, y) => x.CreationDate.CompareTo(y.CreationDate));
 
-            DateTime now = DateTime.Now.AddMilliseconds(1);
-
-            for (int craftIndex = 0; craftIndex < crafts.Count; craftIndex++)
+            if (includeNewFiles)
             {
-                BackupCraft craft = crafts[craftIndex];
+                DateTime now = DateTime.Now.AddMilliseconds(1);
 
-                DateTime from = craft.CreationDate;
-                DateTime to = craftIndex + 1 < crafts.Count ? crafts[craftIndex + 1].CreationDate : now;
-
-                foreach (string fileName in Directory.EnumerateFiles(xwaDirectory, "*.*", SearchOption.AllDirectories))
+                for (int craftIndex = 0; craftIndex < crafts.Count; craftIndex++)
                 {
-                    if (fileName.StartsWith(backupDirectory, StringComparison.OrdinalIgnoreCase))
+                    BackupCraft craft = crafts[craftIndex];
+
+                    DateTime from = craft.CreationDate;
+                    DateTime to = craftIndex + 1 < crafts.Count ? crafts[craftIndex + 1].CreationDate : now;
+
+                    foreach (string fileName in Directory.EnumerateFiles(xwaDirectory, "*.*", SearchOption.AllDirectories))
                     {
-                        continue;
-                    }
+                        if (fileName.StartsWith(backupDirectory, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
 
-                    string name = Path.GetFileName(fileName);
+                        string name = Path.GetFileName(fileName);
 
-                    if (name.StartsWith("flightscreen", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
+                        if (name.StartsWith("flightscreen", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
 
-                    if (name.StartsWith("frontscreen", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
+                        if (name.StartsWith("frontscreen", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
 
-                    string fileNameBackup = fileName.Replace(xwaDirectory, "Backup");
-                    if (craft.FileNames.Any(t => t.Equals(fileNameBackup, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        continue;
-                    }
+                        string fileNameBackup = fileName.Replace(xwaDirectory, "Backup");
+                        if (craft.FileNames.Any(t => t.Equals(fileNameBackup, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            continue;
+                        }
 
-                    DateTime creationDateTime = File.GetCreationTime(fileName);
+                        DateTime creationDateTime = File.GetCreationTime(fileName);
 
-                    if (creationDateTime >= from && creationDateTime < to)
-                    {
-                        craft.FileNames.Add(fileName.Replace(xwaDirectory, "New"));
+                        if (creationDateTime >= from && creationDateTime < to)
+                        {
+                            craft.FileNames.Add(fileName.Replace(xwaDirectory, "New"));
+                        }
                     }
                 }
             }

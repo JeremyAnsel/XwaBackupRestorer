@@ -12,6 +12,8 @@
         <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
             <Button x:Name="openButton" Content="Open..." Click="OpenButton_Click" />
             <Button x:Name="restoreButton" Content="Restore" Tag="{Binding BackupCrafts/}" Click="RestoreButton_Click" />
+            <Separator />
+            <CheckBox Content="Include New Files" IsChecked="{Binding IncludeNewFiles}" />
         </ToolBar>
         <TextBlock DockPanel.Dock="Top" Text="{Binding XwaDirectory}" />
         <Grid>

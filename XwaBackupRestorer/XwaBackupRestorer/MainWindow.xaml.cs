@@ -28,8 +28,23 @@ namespace XwaBackupRestorer
             set { SetValue(XwaDirectoryProperty, value); }
         }
 
+        public bool IncludeNewFiles
+        {
+            get { return (bool)GetValue(IncludeNewFilesProperty); }
+            set { SetValue(IncludeNewFilesProperty, value); }
+        }
+
         public static readonly DependencyProperty XwaDirectoryProperty =
             DependencyProperty.Register("XwaDirectory", typeof(string), typeof(MainWindow));
+
+        public static readonly DependencyProperty IncludeNewFilesProperty =
+            DependencyProperty.Register("IncludeNewFiles", typeof(bool), typeof(MainWindow), new PropertyMetadata(OnIncludeNewFilesChangedCallBack));
+
+        private static void OnIncludeNewFilesChangedCallBack(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var window = (MainWindow)sender;
+            window.OnIncludeNewFilesChanged();
+        }
 
         public ObservableCollection<BackupCraft> BackupCrafts { get; } = new ObservableCollection<BackupCraft>();
 
@@ -40,6 +55,24 @@ namespace XwaBackupRestorer
             this.DataContext = this;
 
             this.OpenButton_Click(null, null);
+        }
+
+        [SuppressMessage("Design", "CA1031:Ne pas intercepter les types d'exception générale", Justification = "Reviewed.")]
+        private void OnIncludeNewFilesChanged()
+        {
+            if (string.IsNullOrEmpty(this.XwaDirectory))
+            {
+                return;
+            }
+
+            try
+            {
+                this.LoadCrafts();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.ToString(), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         [SuppressMessage("Reliability", "CA2000:Supprimer les objets avant la mise hors de portée", Justification = "Reviewed.")]
@@ -84,7 +117,7 @@ namespace XwaBackupRestorer
         {
             this.ClearCrafts();
 
-            List<BackupCraft> crafts = BackupCraft.LoadList(this.XwaDirectory);
+            List<BackupCraft> crafts = BackupCraft.LoadList(this.XwaDirectory, this.IncludeNewFiles);
 
             foreach (var craft in crafts.OrderByDescending(t => t.CreationDate))
             {
