@@ -108,9 +108,15 @@ namespace XwaBackupRestorer
                     string name = fileName.Substring("Backup\\".Length);
                     string backupPath = Path.Combine(xwaDirectory, "Backup", this.FolderName, name);
                     string xwaPath = Path.Combine(xwaDirectory, name);
+                    bool xwaFileExists = File.Exists(xwaPath);
 
                     Directory.CreateDirectory(Path.GetDirectoryName(xwaPath));
                     File.Copy(backupPath, xwaPath, true);
+
+                    if (!xwaFileExists)
+                    {
+                        File.SetCreationTime(xwaPath, File.GetCreationTime(backupPath));
+                    }
                 }
                 else if (fileName.StartsWith("New\\", StringComparison.OrdinalIgnoreCase))
                 {
