@@ -79,12 +79,12 @@ namespace XwaBackupRestorer
         [SuppressMessage("Design", "CA1031:Ne pas intercepter les types d'exception générale", Justification = "Reviewed.")]
         private void OpenButton_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new WPFFolderBrowser.WPFFolderBrowserDialog
+            var dlg = new FolderBrowserForWPF.Dialog
             {
                 Title = "Choose a working directory containing XWingAlliance.exe"
             };
 
-            if (dlg.ShowDialog(this) != true)
+            if (dlg.ShowDialog() != true)
             {
                 return;
             }
